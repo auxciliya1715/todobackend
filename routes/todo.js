@@ -1,17 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const { Todo, validateTodo } = require('../models/todo.js');
+const auth = require('../middleware/auth.js');
 
-router.get('/', async (req, res) => {
+router.get('/', auth,async (req, res) => {
     try {
-        const todos = await Todo.find();
+        const todos = await Todo.find({ userId: req.user._id });
         res.json(todos);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', auth,async (req, res) => {
 
     const { error } = validateTodo(req.body);
     if (error) return res.status(400).json({ message: error.details[0].message });
@@ -19,8 +20,15 @@ router.post('/', async (req, res) => {
     const todo = new Todo({ title: req.body.title });
     try {
 
-        const existingTodo = await Todo.findOne({ title: req.body.title });
-        if (existingTodo) return res.status(400).json({ message: 'Todo already exists' })
+        const existingTodo = await Todo.findOne({ title: req.body.title, userId: req.user._id, });
+        if (existingTodo) return res.status(400).json({ message: 'Todo already exists' });
+
+        
+    const todo = new Todo({
+      title: req.body.title,
+      completed: false,
+      userId: req.user._id 
+    });
 
         const newTodo = await todo.save();
         res.status(200).json(newTodo);
@@ -29,12 +37,12 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id',auth, async (req, res) => {
      const { error } = validateTodo(req.body);
     if (error) return res.status(400).json({ message: error.details[0].message });
 
     try {
-        const todo = await Todo.findById(req.params.id);
+        const todo = await Todo.findById({_id:req.params.id, userId: req.user._id});
         if (!todo) return res.status(404).json({ message: 'Todo not found' });
 
     todo.title = req.body.title;
@@ -47,9 +55,9 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth,async (req, res) => {
     try {
-        const todo = await Todo.findByIdAndDelete(req.params.id);
+        const todo = await Todo.findByIdAndDelete({ _id: req.params.id, userId: req.user._id });
         if (!todo) return res.status(404).json({ message: 'Todo not found' });
 
         res.json({ message: 'Todo deleted' });
