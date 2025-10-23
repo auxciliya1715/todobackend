@@ -16,6 +16,10 @@ const todoSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'User', 
         required: true 
+    },
+    date: { 
+        type: Date, 
+        default: Date.now 
     }
 });
 
@@ -24,7 +28,8 @@ const Todo = mongoose.model('Todo', todoSchema)
 function validateTodo(todo) {
     const schema = Joi.object({
         title: Joi.string().min(2).max(50).required(),
-        completed: Joi.boolean()
+        completed: Joi.boolean(),
+        date: Joi.date().optional() 
     });
     return schema.validate(todo);
 }
