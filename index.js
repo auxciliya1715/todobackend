@@ -5,7 +5,7 @@ require('dotenv').config();
 const todoRoutes = require('./routes/todo');
 const users = require('./routes/user');
 const auth = require('./routes/auth');
-require('./mail/dailyEmail')
+//require('./mail/dailyEmail')
 
 const app = express();
 
