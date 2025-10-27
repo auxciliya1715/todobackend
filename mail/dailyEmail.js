@@ -57,7 +57,7 @@ async function sendDailySummary() {
 
 cron.schedule('0 21 * * *', sendDailySummary, { timezone: 'Asia/Kolkata' });
 
-// Optional manual trigger for testing
-sendDailySummary();
+//sendDailySummary();
+console.log("Worker is idle, waiting for next scheduled job...");
 
 module.exports = sendDailySummary;
