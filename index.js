@@ -9,7 +9,14 @@ const sendDailySummary = require('./mail/dailyEmail')
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: "*", // later change to your frontend domain for security
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "x-auth-token"]
+}));
+app.options('*', cors());
+
+//app.use(cors());
 app.use(express.json());
 app.use('/api/todos', todoRoutes);
 app.use('/api/users', users);
