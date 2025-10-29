@@ -14,7 +14,6 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "x-auth-token"]
 }));
-app.options('*', cors());
 
 //app.use(cors());
 app.use(express.json());
