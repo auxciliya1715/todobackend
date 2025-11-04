@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const joi = require('joi');
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
 
@@ -22,7 +21,35 @@ const userSchema = new mongoose.Schema({
         required:true,
         minlength:5,
         maxlength:1024
+    },
+    userId: {
+        type: String,
+        unique: true
+    },
+    teamMembers:[
+        {  type:mongoose.Schema.Types.ObjectId, ref:'User'}
+     ],
+    admins:[
+        {  type:mongoose.Schema.Types.ObjectId, ref:'User'}
+     ],
+    adminRequests:[
+        {  type:mongoose.Schema.Types.ObjectId, ref:'User'}
+     ]
+});
+
+userSchema.pre('save', async function (next) {
+  if (!this.userId) {
+    let userId;
+    let exists = true;
+
+    while (exists) {
+      const randomNum = Math.floor(10000 + Math.random() * 90000);
+      userId = `USR${randomNum}`;
+      exists = await mongoose.model('User').exists({ userId });
     }
+    this.userId = userId;
+  }
+  next();
 });
 
 userSchema.methods.generateAuthToken = function () {
