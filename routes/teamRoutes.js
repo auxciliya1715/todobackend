@@ -117,6 +117,9 @@ router.get('/list', auth, async (req, res) => {
       .populate('teamMembers', 'name email userId')
       .populate('admins', 'name email')
       .populate('adminRequests', 'name email');
+      
+console.log("Fetched user:", user);
+console.log("Team members from DB:", user.teamMembers);
 
     res.json({
       teamMembers: user.teamMembers,
